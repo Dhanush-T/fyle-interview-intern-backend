@@ -95,3 +95,15 @@ class Assignment(db.Model):
     @classmethod
     def get_assignments_by_teacher(cls, teacher_id):
         return cls.filter(cls.teacher_id == teacher_id).all()
+
+    @classmethod
+    def get_assignments_by_grade_for_students(cls, student_id, grade):
+        grade_list = [member.value for member in GradeEnum]
+        assertions.assert_valid_grade(grade in grade_list, 'ValidationError')
+        return cls.filter(cls.student_id == student_id).filter(cls.grade == grade).all()
+    
+    @classmethod
+    def get_assignments_by_grade_for_teachers(cls, teacher_id, grade):
+        grade_list = [member.value for member in GradeEnum]
+        assertions.assert_valid_grade(grade in grade_list, 'ValidationError')
+        return cls.filter(cls.teacher_id == teacher_id).filter(cls.grade == grade).all()

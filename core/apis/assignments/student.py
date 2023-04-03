@@ -4,7 +4,7 @@ from core.apis import decorators
 from core.apis.responses import APIResponse
 from core.models.assignments import Assignment
 
-from .schema import AssignmentSchema, AssignmentSubmitSchema
+from .schema import AssignmentSchema, AssignmentSubmitSchema, GetAssignmentGradeSchema
 student_assignments_resources = Blueprint('student_assignments_resources', __name__)
 
 
@@ -46,3 +46,14 @@ def submit_assignment(p, incoming_payload):
     db.session.commit()
     submitted_assignment_dump = AssignmentSchema().dump(submitted_assignment)
     return APIResponse.respond(data=submitted_assignment_dump)
+
+@student_assignments_resources.route('/assignments/grade', methods=['POST'], strict_slashes=False)
+@decorators.accept_payload
+@decorators.auth_principal
+def list_by_grade_students(p, incoming_payload):
+    """List all the assignments based on grades"""
+    list_assignment_by_grade = GetAssignmentGradeSchema().load(incoming_payload)
+
+    students_get_assignments_by_grade = Assignment.get_assignments_by_grade_for_students(p.student_id, list_assignment_by_grade.grade)
+    students_get_assignments_by_grade_dump = AssignmentSchema().dump(students_get_assignments_by_grade, many=True)
+    return APIResponse.respond(data=students_get_assignments_by_grade_dump)

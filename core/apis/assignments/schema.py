@@ -48,3 +48,14 @@ class AssignmentGradeSchema(Schema):
     def initiate_class(self, data_dict, many, partial):
         # pylint: disable=unused-argument,no-self-use
         return GeneralObject(**data_dict)
+
+class GetAssignmentGradeSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+
+    grade = fields.String(required=True, allow_none=False)
+
+    @post_load
+    def initiate_class(self, data_dict, many, partial):
+        # pylint: disable=unused-argument,no-self-use
+        return GeneralObject(**data_dict)
